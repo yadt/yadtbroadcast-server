@@ -1,17 +1,12 @@
 from pythonbuilder.core import use_plugin, init, Author
 
 use_plugin("python.core")
-#use_plugin("python.unittest")
-#use_plugin("python.integrationtest")
-#use_plugin("python.coverage")
-#use_plugin("python.pychecker")
-#use_plugin("python.pymetrics")
+use_plugin("python.install_dependencies")
 use_plugin("python.pylint")
 use_plugin("python.distutils")
 use_plugin("python.pydev")
 
 use_plugin("copy_resources")
-#use_plugin("filter_resources")
 
 default_task = ["analyze", "publish"]
 
@@ -26,8 +21,6 @@ for more documentation, visit http://code.google.com/p/yadt/
 '''
 authors = [Author("Arne Hilmann", "arne.hilmann@gmail.com")]
 
-requires = "python >= 2.5 python-twisted >= 11.0.0 autobahn >= 0.4.10"
-
 url = "http://code.google.com/p/yadt"
 license = "GNU GPL v3"
 
@@ -36,7 +29,6 @@ def set_properties (project):
     project.depends_on("Twisted")
     project.depends_on("autobahn")
     
-    project.set_property("coverage_break_build", False)
     project.set_property("pychecker_break_build", False)
 
     project.get_property("distutils_commands").append("bdist_rpm")    
@@ -44,7 +36,6 @@ def set_properties (project):
     project.get_property("copy_resources_glob").append("setup.cfg")
     project.set_property('dir_dist_scripts', 'scripts')
 
-    #project.get_property("distutils_commands").append("bdist_egg")
     project.set_property("distutils_classifiers", [
         'Development Status :: 4 - Beta',
         'Environment :: Console',
@@ -56,4 +47,11 @@ def set_properties (project):
         'Topic :: System :: Software Distribution',
         'Topic :: System :: Systems Administration'
     ])
+    
+@init(environments='teamcity')
+def set_properties_for_teamcity_builds (project):
+    import os
+    project.version = '%s-%s' % (project.version, os.environ.get('BUILD_NUMBER', 0))
+    project.default_task = ['install_build_dependencies', 'publish']
+    
 

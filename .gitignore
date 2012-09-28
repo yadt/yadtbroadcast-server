@@ -1,0 +1,6 @@
+target
+*~
+ve
+*.pyc
+*.pyo
+
