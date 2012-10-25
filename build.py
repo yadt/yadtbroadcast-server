@@ -29,6 +29,8 @@ license = "GNU GPL v3"
 def set_properties (project):
     project.depends_on("Twisted")
     project.depends_on("autobahn")
+    project.depends_on("PyYAML")
+
     
     project.set_property("pychecker_break_build", False)
 
