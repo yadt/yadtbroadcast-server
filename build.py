@@ -11,7 +11,7 @@ use_plugin("copy_resources")
 default_task = ["analyze", "publish"]
 
 name    = "yadtbroadcast-server"
-version = "1.0.3"
+version = "1.1"
 summary = "Yet Another Deployment Tool - The BroadcastServer Part"
 description = '''Yet Another Deployment Tool - The BroadcastServer Part
 - provides channels for publish/subscribe
