@@ -29,12 +29,12 @@ license = "GNU GPL v3"
 def set_properties (project):
     project.depends_on("Twisted")
     project.depends_on("autobahn")
-    project.depends_on("PyYAML")
+    project.depends_on("simplejson")
 
-    
+
     project.set_property("pychecker_break_build", False)
 
-    project.get_property("distutils_commands").append("bdist_rpm")    
+    project.get_property("distutils_commands").append("bdist_rpm")
     project.set_property("copy_resources_target", "$dir_dist")
     project.get_property("copy_resources_glob").append("setup.cfg")
     project.set_property('dir_dist_scripts', 'scripts')
@@ -50,11 +50,11 @@ def set_properties (project):
         'Topic :: System :: Software Distribution',
         'Topic :: System :: Systems Administration'
     ])
-    
+
 @init(environments='teamcity')
 def set_properties_for_teamcity_builds (project):
     import os
     project.version = '%s-%s' % (project.version, os.environ.get('BUILD_NUMBER', 0))
     project.default_task = ['install_build_dependencies', 'publish']
-    
+
 

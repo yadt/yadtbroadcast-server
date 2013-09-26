@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 import sys
-import re
-import json
-import yaml
 import os
 import exceptions
 import socket
@@ -16,7 +13,7 @@ from autobahn.wamp import WampServerFactory
 
 
 sys.path.append('/etc/yadtbroadcast-server')
-from broadcastserverconfig import *
+from broadcastserverconfig import LOG_FILE, CACHE_FILE, WS_PORT, DOCROOT_DIR, HTTP_PORT
 
 log.startLogging(LogFile.fromFullPath(LOG_FILE))
 
@@ -42,15 +39,6 @@ reactor.listenTCP(WS_PORT, factory)
 log.msg('ws listens on port %s' % WS_PORT)
 
 docroot = static.File(DOCROOT_DIR)
-try:
-    for name, path in LOGS.iteritems():
-        if os.path.exists(path):
-            log.msg('adding path %s under /%s' % (path, name))
-            docroot.putChild(name, static.File(path, 'text/plain'))
-        else:
-            log.msg('ignoring path %s, because it does not exist.' % path)
-except:
-    pass
 reactor.listenTCP(HTTP_PORT, server.Site(docroot))
 log.msg('http listens on port %s' % HTTP_PORT)
 
