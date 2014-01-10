@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import simplejson as json
 import sys
 import os
 import exceptions
@@ -7,6 +8,7 @@ import socket
 from twisted.internet import reactor
 from twisted.python import log
 from twisted.web import static, server
+from twisted.web.resource import Resource
 from twisted.python.logfile import LogFile
 
 from autobahn.wamp import WampServerFactory
@@ -38,7 +40,14 @@ yadtbroadcastserver.BroadcastServerProtocol.init_cache()
 reactor.listenTCP(WS_PORT, factory)
 log.msg('ws listens on port %s' % WS_PORT)
 
+class StatusPage(Resource):
+    isLeaf = True
+    def render_GET(self, request):
+        metrics = factory.protocol.get_metrics()
+        return json.dumps(metrics)
+
 docroot = static.File(DOCROOT_DIR)
+docroot.putChild("status", StatusPage())
 reactor.listenTCP(HTTP_PORT, server.Site(docroot))
 log.msg('http listens on port %s' % HTTP_PORT)
 

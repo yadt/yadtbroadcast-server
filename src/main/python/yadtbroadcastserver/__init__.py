@@ -13,16 +13,30 @@ class BroadcastServerProtocol(WampServerProtocol):
     cache = {}
     cache_dirty = False
 
+    metrics = {
+            "rx_messages": 0L,
+            "sessions": 0
+            }
+
+
+    @classmethod
+    def get_metrics(cls):
+        cls.metrics["cache_size"] = len(cls.cache)
+        return cls.metrics
+
     def onSessionOpen(self):
         log.msg('new session from %s:%s' % (self.peer.host, self.peer.port))
         self.registerForPubSub('', True)
+        BroadcastServerProtocol.metrics["sessions"] += 1
 
     def connectionLost(self, reason):
         text = getattr(reason, 'value', reason)
         log.msg('lost session from %s:%s: %s' % (self.peer.host, self.peer.port, text))
         WampServerProtocol.connectionLost(self, reason)
+        BroadcastServerProtocol.metrics["sessions"] -= 1
 
     def onMessage(self, msg, binary):
+        BroadcastServerProtocol.metrics["rx_messages"] += 1
         on_subscribe_for_topic = None
         if not binary:
             try:
