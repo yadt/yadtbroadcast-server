@@ -97,3 +97,9 @@ class BroadcastServerProtocol(WampServerProtocol):
             log.msg(e)
             cls.cache = {}
         reactor.callLater(STORE_CACHE_AFTER_SECONDS, cls.store_cache)
+
+    @classmethod
+    def get_target(cls, target):
+        if target in cls.cache:
+            return json.dumps(cls.cache.get(target).get('payload'))
+        return 'unknown target "%s"... known targets: %s' % (target, ', '.join(cls.cache.keys()))

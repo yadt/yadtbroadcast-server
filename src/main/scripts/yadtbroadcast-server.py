@@ -40,17 +40,37 @@ yadtbroadcastserver.BroadcastServerProtocol.init_cache()
 reactor.listenTCP(WS_PORT, factory)
 log.msg('ws listens on port %s' % WS_PORT)
 
+docroot = static.File(DOCROOT_DIR)
+
+
+class YadtApi(Resource):
+    isLeaf = True
+
+    KNOWN_APIS = set(['yadt'])
+    KNOWN_COMMANDS = set(['status'])
+
+    def render_GET(self, request):
+        log.msg(request)
+        path = request.path.split('/')[1:]
+        log.msg(path)
+        if path[0] not in self.KNOWN_APIS:
+            return 'unknown api %s, known apis: %s' % (path[0], ', '.join(self.KNOWN_APIS))
+        if path[1] not in self.KNOWN_COMMANDS:
+            return 'unknown command %s, known commands: %s' % (path[1], ', '.join(self.KNOWN_COMMANDS))
+        return yadtbroadcastserver.BroadcastServerProtocol.get_target(path[2])
+docroot.putChild("yadt", YadtApi())
+
+
 class StatusPage(Resource):
     isLeaf = True
+
     def render_GET(self, request):
         metrics = factory.protocol.get_metrics()
         return json.dumps(metrics)
-
-docroot = static.File(DOCROOT_DIR)
 docroot.putChild("status", StatusPage())
+
 reactor.listenTCP(HTTP_PORT, server.Site(docroot))
 log.msg('http listens on port %s' % HTTP_PORT)
-
 
 reactor.run()
 
