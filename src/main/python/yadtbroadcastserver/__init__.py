@@ -25,13 +25,13 @@ class BroadcastServerProtocol(WampServerProtocol):
         return cls.metrics
 
     def onSessionOpen(self):
-        log.msg('new session from %s:%s' % (self.peer.host, self.peer.port))
+        log.msg('new session from %s' % str(self.peer))
         self.registerForPubSub('', True)
         BroadcastServerProtocol.metrics["sessions"] += 1
 
     def connectionLost(self, reason):
         text = getattr(reason, 'value', reason)
-        log.msg('lost session from %s:%s: %s' % (self.peer.host, self.peer.port, text))
+        log.msg('lost session from %s:%s' % (str(self.peer), text))
         WampServerProtocol.connectionLost(self, reason)
         BroadcastServerProtocol.metrics["sessions"] -= 1
 
