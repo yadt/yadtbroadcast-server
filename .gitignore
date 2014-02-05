@@ -1,6 +1,6 @@
 target
 *~
-ve
+ve*
 *.pyc
 *.pyo
 

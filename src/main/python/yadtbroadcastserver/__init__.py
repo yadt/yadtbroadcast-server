@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 import simplejson as json
 
-from twisted.internet import reactor
 from twisted.python import log
 
 from autobahn.wamp import WampServerProtocol, WampProtocol
 
-from broadcastserverconfig import CACHE_FILE, STORE_CACHE_AFTER_SECONDS
+from broadcastserverconfig import CACHE_FILE
 
 
 class BroadcastServerProtocol(WampServerProtocol):
@@ -14,10 +13,9 @@ class BroadcastServerProtocol(WampServerProtocol):
     cache_dirty = False
 
     metrics = {
-            "rx_messages": 0L,
-            "sessions": 0
-            }
-
+        "rx_messages": 0L,
+        "sessions": 0
+    }
 
     @classmethod
     def get_metrics(cls):
@@ -85,7 +83,7 @@ class BroadcastServerProtocol(WampServerProtocol):
             json.dump(cls.cache, f)
             f.close()
             cls.cache_dirty = False
-        reactor.callLater(STORE_CACHE_AFTER_SECONDS, cls.store_cache)
+        # reactor.callLater(STORE_CACHE_AFTER_SECONDS, cls.store_cache)
 
     @classmethod
     def init_cache(cls):
@@ -96,7 +94,7 @@ class BroadcastServerProtocol(WampServerProtocol):
         except Exception, e:
             log.msg(e)
             cls.cache = {}
-        reactor.callLater(STORE_CACHE_AFTER_SECONDS, cls.store_cache)
+        # reactor.callLater(STORE_CACHE_AFTER_SECONDS, cls.store_cache)
 
     @classmethod
     def get_target(cls, target):
