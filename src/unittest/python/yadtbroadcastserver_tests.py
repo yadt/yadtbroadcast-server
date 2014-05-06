@@ -76,3 +76,6 @@ class TestCache(unittest.TestCase):
     def test_store_cache_noop_with_clean_cache(self):
         self.ybc.store_cache()
 
+    def test_store_cache_writes_with_dirty_cache(self):
+        BroadcastServerProtocol.cache_dirty = True
+        self.ybc.store_cache()
