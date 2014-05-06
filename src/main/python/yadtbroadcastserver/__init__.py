@@ -10,7 +10,6 @@ try:
 except ImportError:  # autobahn 0.8.0+
     from autobahn.wamp1.protocol import WampServerProtocol, WampProtocol
 
-from broadcastserverconfig import CACHE_FILE, METRICS_DIRECTORY
 
 
 def _write_metrics(metrics, metrics_file, prefix=""):
@@ -31,7 +30,17 @@ class BroadcastServerProtocol(WampServerProtocol):
 
     @property
     def metrics_directory(self):
-        return METRICS_DIRECTORY
+        try:
+            from broadcastserverconfig import METRICS_DIRECTORY
+            return METRICS_DIRECTORY
+        except ImportError:
+            return ""
+
+    @property
+    def cache_file(self):
+        from broadcastserverconfig import CACHE_FILE
+        return CACHE_FILE
+
 
     def write_metrics_to_file(self):
         if not self.metrics_directory:
@@ -106,7 +115,7 @@ class BroadcastServerProtocol(WampServerProtocol):
     def store_cache(cls):
         if cls.cache_dirty:
             log.msg('saving cache on disk')
-            f = open(CACHE_FILE, 'w')
+            f = open(self.cache_file, 'w')
             json.dump(cls.cache, f)
             f.close()
             cls.cache_dirty = False
@@ -115,7 +124,7 @@ class BroadcastServerProtocol(WampServerProtocol):
     @classmethod
     def init_cache(cls):
         try:
-            f = open(CACHE_FILE)
+            f = open(self.cache_file)
             cls.cache = json.load(f)
             f.close()
         except Exception, e:
