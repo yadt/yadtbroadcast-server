@@ -63,3 +63,9 @@ class WriteMetricsToFileTests(unittest.TestCase):
         self.ybc.write_metrics_to_file()
 
         self.assertFalse(open_.called)
+
+
+class TestCache(unittest.TestCase):
+
+    def test_init_cache(self):
+        BroadcastServerProtocol.init_cache()
