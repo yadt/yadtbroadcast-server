@@ -11,7 +11,6 @@ except ImportError:  # autobahn 0.8.0+
     from autobahn.wamp1.protocol import WampServerProtocol, WampProtocol
 
 
-
 def _write_metrics(metrics, metrics_file, prefix=""):
     for metric_name in metrics:
         metrics_file.write("{0}={1}\n".format(prefix + metric_name, metrics[metric_name]))
@@ -40,7 +39,6 @@ class BroadcastServerProtocol(WampServerProtocol):
     def cache_file(self):
         from broadcastserverconfig import CACHE_FILE
         return CACHE_FILE
-
 
     def write_metrics_to_file(self):
         if not self.metrics_directory:
