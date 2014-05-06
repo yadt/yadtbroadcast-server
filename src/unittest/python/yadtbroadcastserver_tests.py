@@ -1,5 +1,4 @@
 import unittest
-import sys
 
 from mock import Mock, call, patch, MagicMock
 
