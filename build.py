@@ -18,11 +18,11 @@ description = '''Yet Another Deployment Tool - The BroadcastServer Part
 - handles messages form yadtbroadcast-client
 - caches state information for newly connecting clients
 
-for more documentation, visit http://code.google.com/p/yadt/
+for more documentation, visit http://www.yadt-project.org/
 '''
 authors = [Author("Arne Hilmann", "arne.hilmann@gmail.com")]
 
-url = "http://code.google.com/p/yadt"
+url = "https://github.com/yadt/yadtbroadcast-service"
 license = "GNU GPL v3"
 
 @init
