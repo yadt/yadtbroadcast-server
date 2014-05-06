@@ -35,8 +35,8 @@ class BroadcastServerProtocol(WampServerProtocol):
         except ImportError:
             return ""
 
-    @property
-    def cache_file(self):
+    @classmethod
+    def cache_file(cls):
         from broadcastserverconfig import CACHE_FILE
         return CACHE_FILE
 
@@ -112,7 +112,7 @@ class BroadcastServerProtocol(WampServerProtocol):
     def store_cache(cls):
         if cls.cache_dirty:
             log.msg('saving cache on disk')
-            f = open(self.cache_file, 'w')
+            f = open(cls.cache_file(), 'w')
             json.dump(cls.cache, f)
             f.close()
             cls.cache_dirty = False
@@ -120,7 +120,7 @@ class BroadcastServerProtocol(WampServerProtocol):
     @classmethod
     def init_cache(cls):
         try:
-            f = open(self.cache_file)
+            f = open(cls.cache_file())
             cls.cache = json.load(f)
             f.close()
         except Exception, e:
