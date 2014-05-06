@@ -67,5 +67,12 @@ class WriteMetricsToFileTests(unittest.TestCase):
 
 class TestCache(unittest.TestCase):
 
+    def setUp(self):
+        self.ybc = BroadcastServerProtocol()
+
     def test_init_cache(self):
-        BroadcastServerProtocol.init_cache()
+        self.ybc.init_cache()
+
+    def test_store_cache_noop_with_clean_cache(self):
+        self.ybc.store_cache()
+
