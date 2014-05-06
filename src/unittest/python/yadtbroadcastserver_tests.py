@@ -76,6 +76,16 @@ class TestCache(unittest.TestCase):
     def test_store_cache_noop_with_clean_cache(self):
         self.ybc.store_cache()
 
-    def test_store_cache_writes_with_dirty_cache(self):
+    @patch("yadtbroadcastserver.open", create=True)
+    @patch("yadtbroadcastserver.BroadcastServerProtocol.cache_file")
+    def test_store_cache_writes_with_dirty_cache(self, cache_file, open_):
+        cache_file.return_value = '/any/cache/file'
+        mock_file = MagicMock(spec=file)
+        open_.return_value = mock_file
+
         BroadcastServerProtocol.cache_dirty = True
         self.ybc.store_cache()
+
+        open_.assert_called_with('/any/cache/file', 'w')
+        mock_file.write.assert_called_once_with('{}')
+        self.assertFalse(BroadcastServerProtocol.cache_dirty)
