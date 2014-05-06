@@ -1,15 +1,21 @@
 #!/usr/bin/env python
-import simplejson as json
 
+from collections import defaultdict
+from os.path import join
+
+import simplejson as json
 from twisted.python import log
 try:
     from autobahn.wamp import WampClientFactory, WampClientProtocol
 except ImportError:  # autobahn 0.8.0+
     from autobahn.wamp1.protocol import WampServerProtocol, WampProtocol
 
+from broadcastserverconfig import CACHE_FILE, METRICS_DIRECTORY
 
 
-from broadcastserverconfig import CACHE_FILE
+def _write_metrics(metrics, metrics_file, prefix=""):
+    for metric_name in metrics:
+        metrics_file.write("{0}={1}\n".format(prefix + metric_name, metrics[metric_name]))
 
 
 class BroadcastServerProtocol(WampServerProtocol):
@@ -17,9 +23,23 @@ class BroadcastServerProtocol(WampServerProtocol):
     cache_dirty = False
 
     metrics = {
-        "rx_messages": 0L,
+        "messages_all": 0L,
         "sessions": 0
     }
+
+    target_metrics = defaultdict(lambda: 0)
+
+    @property
+    def metrics_directory(self):
+        return METRICS_DIRECTORY
+
+    def write_metrics_to_file(self):
+        if not self.metrics_directory:
+            return
+        path_to_monitoring_file = join(self.metrics_directory, "ybc.metrics")
+        with open(path_to_monitoring_file, mode="w") as metrics_file:
+            _write_metrics(BroadcastServerProtocol.metrics, metrics_file)
+            _write_metrics(BroadcastServerProtocol.target_metrics, metrics_file, "target_messages.")
 
     @classmethod
     def get_metrics(cls):
@@ -38,12 +58,13 @@ class BroadcastServerProtocol(WampServerProtocol):
         BroadcastServerProtocol.metrics["sessions"] -= 1
 
     def onMessage(self, msg, binary):
-        BroadcastServerProtocol.metrics["rx_messages"] += 1
+        BroadcastServerProtocol.metrics["messages_all"] += 1
         on_subscribe_for_topic = None
         if not binary:
             try:
                 obj = json.loads(msg)
                 if type(obj) == list:
+                    topicUri = None
                     if obj[0] == WampProtocol.MESSAGE_TYPEID_SUBSCRIBE:
                         topicUri = self.prefixes.resolveOrPass(obj[1])
                         on_subscribe_for_topic = topicUri
@@ -51,6 +72,8 @@ class BroadcastServerProtocol(WampServerProtocol):
                         topicUri = self.prefixes.resolveOrPass(obj[1])
                         payload = obj[2]
                         self.update_cache(topicUri, payload, self.cache)
+                    BroadcastServerProtocol.target_metrics[topicUri] += 1
+
             except Exception, e:
                 log.msg(e)
                 pass

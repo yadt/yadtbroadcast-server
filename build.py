@@ -5,10 +5,11 @@ use_plugin("python.install_dependencies")
 use_plugin("python.pylint")
 use_plugin("python.distutils")
 use_plugin("python.pydev")
+use_plugin("python.unittest")
 
 use_plugin("copy_resources")
 
-default_task = ["analyze", "publish"]
+default_task = ["analyze", "verify", "publish"]
 
 name    = "yadtbroadcast-server"
 version = "1.1"
@@ -27,12 +28,15 @@ license = "GNU GPL v3"
 
 @init
 def set_properties (project):
+    project.build_depends_on("mock")
+
     project.depends_on("Twisted")
     project.depends_on("autobahn")
     project.depends_on("simplejson")
 
 
     project.set_property("pychecker_break_build", False)
+    project.set_property("verbose", True)
 
     project.get_property("distutils_commands").append("bdist_rpm")
     project.set_property("copy_resources_target", "$dir_dist")
