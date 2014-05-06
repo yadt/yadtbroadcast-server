@@ -2,8 +2,12 @@
 import simplejson as json
 
 from twisted.python import log
+try:
+    from autobahn.wamp import WampClientFactory, WampClientProtocol
+except ImportError:  # autobahn 0.8.0+
+    from autobahn.wamp1.protocol import WampServerProtocol, WampProtocol
 
-from autobahn.wamp import WampServerProtocol, WampProtocol
+
 
 from broadcastserverconfig import CACHE_FILE
 
