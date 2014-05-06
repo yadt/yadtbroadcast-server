@@ -82,7 +82,6 @@ class BroadcastServerProtocol(WampServerProtocol):
                         payload = obj[2]
                         self.update_cache(topicUri, payload, self.cache)
                     BroadcastServerProtocol.target_metrics[topicUri] += 1
-
             except Exception, e:
                 log.msg(e)
                 pass
@@ -119,7 +118,6 @@ class BroadcastServerProtocol(WampServerProtocol):
             json.dump(cls.cache, f)
             f.close()
             cls.cache_dirty = False
-        # reactor.callLater(STORE_CACHE_AFTER_SECONDS, cls.store_cache)
 
     @classmethod
     def init_cache(cls):
@@ -130,7 +128,6 @@ class BroadcastServerProtocol(WampServerProtocol):
         except Exception, e:
             log.msg(e)
             cls.cache = {}
-        # reactor.callLater(STORE_CACHE_AFTER_SECONDS, cls.store_cache)
 
     @classmethod
     def get_target(cls, target):
