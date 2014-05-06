@@ -3,21 +3,19 @@ import sys
 
 from mock import Mock, call, patch, MagicMock
 
+from yadtbroadcastserver import BroadcastServerProtocol, _write_metrics
+
 
 class WriteMetricsToFileTests(unittest.TestCase):
 
     def setUp(self):
-        import sys
-        sys.modules["broadcastserverconfig"] = Mock()
-        from yadtbroadcastserver import BroadcastServerProtocol, _write_metrics
         self.ybc = BroadcastServerProtocol()
-        self._write_metrics = _write_metrics
 
     def test_should_not_write_anything_when_no_metrics_given(self):
         mock_file = Mock()
         metrics = {}
 
-        self._write_metrics(metrics, mock_file)
+        _write_metrics(metrics, mock_file)
 
         self.assertFalse(mock_file.write.called)
 
@@ -28,7 +26,7 @@ class WriteMetricsToFileTests(unittest.TestCase):
             "metric2": 42
         }
 
-        self._write_metrics(metrics, mock_file)
+        _write_metrics(metrics, mock_file)
 
         self.assertEquals(mock_file.write.call_args_list,
                           [call('metric2=42\n'),
@@ -41,7 +39,7 @@ class WriteMetricsToFileTests(unittest.TestCase):
             "metric2": 42
         }
 
-        self._write_metrics(metrics, mock_file, prefix="example.system.")
+        _write_metrics(metrics, mock_file, prefix="example.system.")
 
         self.assertEquals(mock_file.write.call_args_list,
                           [call('example.system.metric2=42\n'),
