@@ -35,7 +35,7 @@ class BroadcastServerProtocol(WampServerProtocol):
 
     metrics = defaultdict(lambda: 0)
 
-    @property
+    @classmethod
     def metrics_directory(self):
         try:
             from broadcastserverconfig import METRICS_DIRECTORY
@@ -48,22 +48,25 @@ class BroadcastServerProtocol(WampServerProtocol):
         from broadcastserverconfig import CACHE_FILE
         return CACHE_FILE
 
-    def write_metrics_to_file(self):
-        if not self.metrics_directory:
+    @classmethod
+    def write_metrics_to_file(cls):
+        if not cls.metrics_directory():
             return
-        path_to_monitoring_file = join(self.metrics_directory, "ybc.metrics")
+        path_to_monitoring_file = join(cls.metrics_directory(), "ybc.metrics")
         with open(path_to_monitoring_file, mode="w") as metrics_file:
             _write_metrics(BroadcastServerProtocol.metrics, metrics_file)
 
-    def schedule_write_metrics(self, delay=30, first_call=False):
-        reactor.callLater(delay, self.schedule_write_metrics)
-        self.write_metrics_to_file()
-
+    @classmethod
+    def schedule_write_metrics(cls, delay=30, first_call=False):
+        reactor.callLater(delay, cls.schedule_write_metrics)
+        cls.write_metrics_to_file()
+        log.msg("Wrote metrics to file")
 
     @classmethod
     def reset_metrics_at_midnight(cls, first_call=False):
         reactor.callLater(seconds_to_midnight(), cls.reset_metrics_at_midnight)
         if not first_call:
+            log.msg("Resetting metrics")
             _reset_metrics(BroadcastServerProtocol.metrics)
 
     @classmethod
