@@ -89,3 +89,9 @@ class TestCache(unittest.TestCase):
         open_.assert_called_with('/any/cache/file', 'w')
         mock_file.write.assert_called_once_with('{}')
         self.assertFalse(BroadcastServerProtocol.cache_dirty)
+
+
+class TestResetMetrics(unittest.TestCase):
+
+    def test(self):
+        pass
