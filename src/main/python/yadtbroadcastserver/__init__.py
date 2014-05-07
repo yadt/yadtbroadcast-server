@@ -146,7 +146,7 @@ class BroadcastServerProtocol(WampServerProtocol):
             cls.cache = json.load(f)
             f.close()
         except Exception, e:
-            log.msg(e)
+            log.msg("No cache found : %s" % e)
             cls.cache = {}
 
     @classmethod
