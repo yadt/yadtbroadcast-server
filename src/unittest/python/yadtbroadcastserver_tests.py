@@ -102,6 +102,6 @@ class TestResetMetrics(unittest.TestCase):
         _reset_metrics(metrics)
 
         self.assertEquals(metrics,
-                          {   "full": 0,
+                          {"full": 0,
                               "full_long": 0,
-                          })
+                           })
