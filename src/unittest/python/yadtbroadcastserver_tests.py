@@ -2,7 +2,9 @@ import unittest
 
 from mock import Mock, call, patch, MagicMock
 
-from yadtbroadcastserver import BroadcastServerProtocol, _write_metrics
+from yadtbroadcastserver import (BroadcastServerProtocol,
+                                 _write_metrics,
+                                 _reset_metrics)
 
 
 class WriteMetricsToFileTests(unittest.TestCase):
@@ -89,3 +91,30 @@ class TestCache(unittest.TestCase):
         open_.assert_called_with('/any/cache/file', 'w')
         mock_file.write.assert_called_once_with('{}')
         self.assertFalse(BroadcastServerProtocol.cache_dirty)
+
+
+class TestResetMetrics(unittest.TestCase):
+
+    def test_should_remove_metrics_when_they_are_empty(self):
+        metrics = {
+            "empty": 0,
+            "empty_long": 0L,
+        }
+
+        _reset_metrics(metrics)
+
+        self.assertEquals(metrics,
+                          {})
+
+    def test_should_just_reset_metrics_when_they_are_not_empty(self):
+        metrics = {
+            "full": 42,
+            "full_long": 42L,
+        }
+
+        _reset_metrics(metrics)
+
+        self.assertEquals(metrics,
+                          {   "full": 0,
+                              "full_long": 0,
+                          })

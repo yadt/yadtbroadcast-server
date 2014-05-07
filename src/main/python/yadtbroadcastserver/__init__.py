@@ -16,6 +16,14 @@ def _write_metrics(metrics, metrics_file, prefix=""):
         metrics_file.write("{0}={1}\n".format(prefix + metric_name, metrics[metric_name]))
 
 
+def _reset_metrics(metrics):
+    for metric_name in metrics.keys():
+        if metrics[metric_name] == 0:
+            metrics.pop(metric_name)
+        else:
+            metrics[metric_name] = 0
+
+
 class BroadcastServerProtocol(WampServerProtocol):
     cache = {}
     cache_dirty = False
