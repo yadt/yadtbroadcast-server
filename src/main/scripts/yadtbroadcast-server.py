@@ -11,7 +11,11 @@ from twisted.web import static, server
 from twisted.web.resource import Resource
 from twisted.python.logfile import LogFile
 
-from autobahn.wamp import WampServerFactory
+
+try:
+    from autobahn.wamp import WampServerFactory
+except ImportError:  # autobahn 0.8.0+
+    from autobahn.wamp1.protocol import WampServerFactory
 
 
 sys.path.append('/etc/yadtbroadcast-server')
