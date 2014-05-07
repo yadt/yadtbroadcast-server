@@ -33,8 +33,6 @@ def set_properties (project):
     project.depends_on("autobahn")
     project.depends_on("simplejson")
 
-
-    project.set_property("pychecker_break_build", False)
     project.set_property("verbose", True)
 
     project.get_property("distutils_commands").append("bdist_rpm")
