@@ -9,7 +9,7 @@ use_plugin("python.frosted")
 
 use_plugin("copy_resources")
 
-default_task = ["analyze", "verify", "publish"]
+default_task = ["verify", "analyze", "publish"]
 
 name    = "yadtbroadcast-server"
 version = "1.1"
