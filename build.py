@@ -11,7 +11,7 @@ use_plugin("copy_resources")
 
 default_task = ["verify", "analyze", "publish"]
 
-name    = "yadtbroadcast-server"
+name = "yadtbroadcast-server"
 version = "1.1"
 summary = "Yet Another Deployment Tool - The BroadcastServer Part"
 description = '''Yet Another Deployment Tool - The BroadcastServer Part
@@ -26,8 +26,9 @@ authors = [Author("Arne Hilmann", "arne.hilmann@gmail.com")]
 url = "https://github.com/yadt/yadtbroadcast-service"
 license = "GNU GPL v3"
 
+
 @init
-def set_properties (project):
+def set_properties(project):
     project.build_depends_on("mock")
 
     project.depends_on("Twisted")
@@ -53,10 +54,9 @@ def set_properties (project):
         'Topic :: System :: Systems Administration'
     ])
 
+
 @init(environments='teamcity')
-def set_properties_for_teamcity_builds (project):
+def set_properties_for_teamcity_builds(project):
     import os
     project.version = '%s-%s' % (project.version, os.environ.get('BUILD_NUMBER', 0))
     project.default_task = ['install_build_dependencies', 'publish']
-
-
