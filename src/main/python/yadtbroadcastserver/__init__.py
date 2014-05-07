@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 from collections import defaultdict
-import datetime
 from os.path import join
 
 import simplejson as json
@@ -12,6 +11,9 @@ try:
     from autobahn.wamp import WampServerProtocol, WampProtocol
 except ImportError:  # autobahn 0.8.0+
     from autobahn.wamp1.protocol import WampServerProtocol, WampProtocol
+
+
+from yadtbroadcastserver.scheduling import seconds_to_midnight
 
 
 def _write_metrics(metrics, metrics_file):
@@ -53,14 +55,13 @@ class BroadcastServerProtocol(WampServerProtocol):
         with open(path_to_monitoring_file, mode="w") as metrics_file:
             _write_metrics(BroadcastServerProtocol.metrics, metrics_file)
 
-    def schedule_write_metrics(self, delay=30):
+    def schedule_write_metrics(self, delay=30, first_call=False):
         reactor.callLater(delay, self.schedule_write_metrics)
         self.write_metrics_to_file()
 
-    def schedule_metrics_reset(self, delay=60):
-        reactor.callLater(delay, self.schedule_write_metrics)
-        current_hour = datetime.now().hour
-        if current_hour == 0:  # only refresh at 0:xx a.m.
+    def reset_metrics_at_midnight(self, first_call=False):
+        reactor.callLater(seconds_to_midnight(), self.reset_metrics_at_midnight)
+        if not first_call:
             _reset_metrics(BroadcastServerProtocol.metrics)
 
     @classmethod
