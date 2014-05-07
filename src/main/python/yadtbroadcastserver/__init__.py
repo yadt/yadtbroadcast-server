@@ -59,8 +59,9 @@ class BroadcastServerProtocol(WampServerProtocol):
     @classmethod
     def schedule_write_metrics(cls, delay=30, first_call=False):
         reactor.callLater(delay, cls.schedule_write_metrics)
-        cls.write_metrics_to_file()
-        log.msg("Wrote metrics to file")
+        if not first_call:
+            cls.write_metrics_to_file()
+            log.msg("Wrote metrics to file")
 
     @classmethod
     def reset_metrics_at_midnight(cls, first_call=False):

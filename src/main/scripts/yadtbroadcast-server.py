@@ -42,6 +42,7 @@ factory = WampServerFactory(uri, debugWamp=False)
 factory.protocol = yadtbroadcastserver.BroadcastServerProtocol
 yadtbroadcastserver.BroadcastServerProtocol.init_cache()
 yadtbroadcastserver.BroadcastServerProtocol.reset_metrics_at_midnight(first_call=True)
+yadtbroadcastserver.BroadcastServerProtocol.schedule_write_metrics(first_call=True)
 reactor.listenTCP(WS_PORT, factory)
 log.msg('ws listens on port %s' % WS_PORT)
 
