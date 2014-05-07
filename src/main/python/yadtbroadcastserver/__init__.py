@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 
 from collections import defaultdict
+import datetime
 from os.path import join
 
 import simplejson as json
 from twisted.python import log
+from twisted.internet import reactor
+
 try:
     from autobahn.wamp import WampServerProtocol, WampProtocol
 except ImportError:  # autobahn 0.8.0+
@@ -55,6 +58,16 @@ class BroadcastServerProtocol(WampServerProtocol):
         with open(path_to_monitoring_file, mode="w") as metrics_file:
             _write_metrics(BroadcastServerProtocol.metrics, metrics_file)
             _write_metrics(BroadcastServerProtocol.target_metrics, metrics_file, "target_messages.")
+
+    def schedule_write_metrics(self, delay=30):
+        reactor.callLater(delay, self.schedule_write_metrics)
+        self.write_metrics_to_file()
+
+    def schedule_metrics_reset(self, delay=60):
+        reactor.callLater(delay, self.schedule_write_metrics)
+        current_hour = datetime.now().hour
+        if current_hour == 0:  # only refresh at 0:xx a.m.
+            _reset_metrics(BroadcastServerProtocol.target_metrics)
 
     @classmethod
     def get_metrics(cls):
