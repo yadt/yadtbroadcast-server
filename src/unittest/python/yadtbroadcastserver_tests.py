@@ -20,7 +20,7 @@ class WriteMetricsToFileTests(unittest.TestCase):
 
         self.assertFalse(mock_file.write.called)
 
-    def test_should_write_metrics_without_prefix(self):
+    def test_should_write_metrics(self):
         mock_file = Mock()
         metrics = {
             "metric1": 21,
@@ -32,19 +32,6 @@ class WriteMetricsToFileTests(unittest.TestCase):
         self.assertEquals(mock_file.write.call_args_list,
                           [call('metric2=42\n'),
                            call('metric1=21\n')])
-
-    def test_should_write_metrics_with_prefix(self):
-        mock_file = Mock()
-        metrics = {
-            "metric1": 21,
-            "metric2": 42
-        }
-
-        _write_metrics(metrics, mock_file, prefix="example.system.")
-
-        self.assertEquals(mock_file.write.call_args_list,
-                          [call('example.system.metric2=42\n'),
-                           call('example.system.metric1=21\n')])
 
     @patch("yadtbroadcastserver.open", create=True)
     @patch("yadtbroadcastserver.BroadcastServerProtocol.metrics_directory")

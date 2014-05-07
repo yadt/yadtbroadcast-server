@@ -14,9 +14,9 @@ except ImportError:  # autobahn 0.8.0+
     from autobahn.wamp1.protocol import WampServerProtocol, WampProtocol
 
 
-def _write_metrics(metrics, metrics_file, prefix=""):
+def _write_metrics(metrics, metrics_file):
     for metric_name in metrics:
-        metrics_file.write("{0}={1}\n".format(prefix + metric_name, metrics[metric_name]))
+        metrics_file.write("{0}={1}\n".format(metric_name, metrics[metric_name]))
 
 
 def _reset_metrics(metrics):
@@ -31,12 +31,7 @@ class BroadcastServerProtocol(WampServerProtocol):
     cache = {}
     cache_dirty = False
 
-    metrics = {
-        "messages_all": 0L,
-        "sessions": 0
-    }
-
-    target_metrics = defaultdict(lambda: 0)
+    metrics = defaultdict(lambda: 0)
 
     @property
     def metrics_directory(self):
@@ -57,7 +52,6 @@ class BroadcastServerProtocol(WampServerProtocol):
         path_to_monitoring_file = join(self.metrics_directory, "ybc.metrics")
         with open(path_to_monitoring_file, mode="w") as metrics_file:
             _write_metrics(BroadcastServerProtocol.metrics, metrics_file)
-            _write_metrics(BroadcastServerProtocol.target_metrics, metrics_file, "target_messages.")
 
     def schedule_write_metrics(self, delay=30):
         reactor.callLater(delay, self.schedule_write_metrics)
@@ -67,7 +61,7 @@ class BroadcastServerProtocol(WampServerProtocol):
         reactor.callLater(delay, self.schedule_write_metrics)
         current_hour = datetime.now().hour
         if current_hour == 0:  # only refresh at 0:xx a.m.
-            _reset_metrics(BroadcastServerProtocol.target_metrics)
+            _reset_metrics(BroadcastServerProtocol.metrics)
 
     @classmethod
     def get_metrics(cls):
@@ -100,7 +94,7 @@ class BroadcastServerProtocol(WampServerProtocol):
                         topicUri = self.prefixes.resolveOrPass(obj[1])
                         payload = obj[2]
                         self.update_cache(topicUri, payload, self.cache)
-                    BroadcastServerProtocol.target_metrics[topicUri] += 1
+                    BroadcastServerProtocol.metrics["target_messages." + topicUri] += 1
             except Exception, e:
                 log.msg(e)
                 pass
