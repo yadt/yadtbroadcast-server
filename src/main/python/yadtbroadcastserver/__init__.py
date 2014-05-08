@@ -101,7 +101,8 @@ class BroadcastServerProtocol(WampServerProtocol):
                         topicUri = self.prefixes.resolveOrPass(obj[1])
                         payload = obj[2]
                         self.update_cache(topicUri, payload, self.cache)
-                    BroadcastServerProtocol.metrics["target_messages." + topicUri] += 1
+                    if topicUri:
+                        BroadcastServerProtocol.metrics["target_messages." + topicUri] += 1
             except Exception, e:
                 log.msg(e)
                 pass
