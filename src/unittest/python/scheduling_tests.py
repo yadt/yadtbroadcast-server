@@ -8,7 +8,14 @@ from yadtbroadcastserver import scheduling
 
 class TestTimeUntilMidnight(unittest.TestCase):
 
+    mock_now_return = datetime.datetime(1970, 1, 1, 23, 59)
+
     @patch('yadtbroadcastserver.scheduling._now')
-    def test(self, now_mock):
-        now_mock.return_value = datetime.datetime(1970, 1, 1, 23, 59)
-        scheduling.seconds_to_midnight()
+    def test_seconds_to_midnight_with_default_offset(self, now_mock):
+        now_mock.return_value = self.mock_now_return
+        self.assertEquals(120, scheduling.seconds_to_midnight())
+
+    @patch('yadtbroadcastserver.scheduling._now')
+    def test_seconds_to_midnight_with_other_offset(self, now_mock):
+        now_mock.return_value = self.mock_now_return
+        self.assertEquals(60, scheduling.seconds_to_midnight(offset_seconds=0))
