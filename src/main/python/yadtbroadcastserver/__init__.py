@@ -2,6 +2,7 @@
 
 from collections import defaultdict
 from os.path import join
+from time import time
 
 import simplejson as json
 from twisted.python import log
@@ -60,8 +61,10 @@ class BroadcastServerProtocol(WampServerProtocol):
     def schedule_write_metrics(cls, delay=30, first_call=False):
         reactor.callLater(delay, cls.schedule_write_metrics)
         if not first_call:
+            start = time()
             cls.write_metrics_to_file()
-            log.msg("Wrote metrics to file")
+            end = time()
+            log.msg("Wrote metrics to file in {0} seconds".format(end - start))
 
     @classmethod
     def reset_metrics_at_midnight(cls, first_call=False):
