@@ -54,8 +54,12 @@ class BroadcastServerProtocol(WampServerProtocol):
         if not cls.metrics_directory():
             return
         path_to_monitoring_file = join(cls.metrics_directory(), "ybc.metrics")
-        with open(path_to_monitoring_file, mode="w") as metrics_file:
-            _write_metrics(BroadcastServerProtocol.metrics, metrics_file)
+
+        try:
+            with open(path_to_monitoring_file, mode="w") as metrics_file:
+                _write_metrics(BroadcastServerProtocol.metrics, metrics_file)
+        except Exception as e:
+            log.err("Error writing metrics to file : {0}".format(e))
 
     @classmethod
     def schedule_write_metrics(cls, delay=30, first_call=False):
