@@ -70,11 +70,6 @@ class BroadcastServerProtocol(WampServerProtocol):
             log.msg("Resetting metrics")
             _reset_metrics(BroadcastServerProtocol.metrics)
 
-    @classmethod
-    def get_metrics(cls):
-        cls.metrics["cache_size"] = len(cls.cache)
-        return cls.metrics
-
     def onSessionOpen(self):
         log.msg('new session from %s' % str(self.peer))
         self.registerForPubSub('', True)
