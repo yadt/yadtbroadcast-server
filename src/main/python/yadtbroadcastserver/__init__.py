@@ -65,6 +65,7 @@ class BroadcastServerProtocol(WampServerProtocol):
             cls.write_metrics_to_file()
             write_duration = time() - start
             log.msg("Wrote metrics to file in {0} seconds".format(write_duration))
+            cls.metrics["last_write_duration"] = write_duration
 
     @classmethod
     def reset_metrics_at_midnight(cls, first_call=False):
