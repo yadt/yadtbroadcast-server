@@ -51,9 +51,10 @@ class BroadcastServerProtocol(WampServerProtocol):
 
     @classmethod
     def write_metrics_to_file(cls):
-        if not cls.metrics_directory():
+        metrics_directory = cls.metrics_directory()
+        if not metrics_directory:
             return
-        path_to_monitoring_file = join(cls.metrics_directory(), "ybc.metrics")
+        path_to_monitoring_file = join(metrics_directory, "ybc.metrics")
 
         try:
             with open(path_to_monitoring_file, mode="w") as metrics_file:
