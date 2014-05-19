@@ -2,6 +2,7 @@
 
 from collections import defaultdict
 from os.path import join
+import os
 from time import time
 
 import simplejson as json
@@ -54,6 +55,14 @@ class BroadcastServerProtocol(WampServerProtocol):
         metrics_directory = cls.metrics_directory()
         if not metrics_directory:
             return
+
+        if not os.path.isdir(metrics_directory):
+            try:
+                os.makedirs(metrics_directory)
+            except Exception as e:
+                log.err("Cannot create metrics directory : {0}".format(e))
+                return
+
         path_to_monitoring_file = join(metrics_directory, "ybc.metrics")
 
         try:

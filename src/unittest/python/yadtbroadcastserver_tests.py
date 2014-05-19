@@ -35,7 +35,8 @@ class WriteMetricsToFileTests(unittest.TestCase):
 
     @patch("yadtbroadcastserver.open", create=True)
     @patch("yadtbroadcastserver.BroadcastServerProtocol.metrics_directory")
-    def test_should_open_configured_file_for_writing(self, metrics_directory, open_):
+    @patch("yadtbroadcastserver.os")
+    def test_should_open_configured_file_for_writing(self, _, metrics_directory, open_):
         metrics_directory.return_value = '/any/dir'
         open_.return_value = MagicMock(spec=file)
 
@@ -45,7 +46,20 @@ class WriteMetricsToFileTests(unittest.TestCase):
 
     @patch("yadtbroadcastserver.open", create=True)
     @patch("yadtbroadcastserver.BroadcastServerProtocol.metrics_directory")
-    def test_should_not_open_anything_when_no_metric(self, metrics_directory, open_):
+    @patch("yadtbroadcastserver.os")
+    def test_should_create_metrics_directory_if_necessary(self, os, metrics_directory, open_):
+        os.path.isdir.return_value = False
+        metrics_directory.return_value = '/any/dir'
+        open_.return_value = MagicMock(spec=file)
+
+        self.ybc.write_metrics_to_file()
+
+        os.makedirs.assert_called_once_with('/any/dir')
+
+    @patch("yadtbroadcastserver.open", create=True)
+    @patch("yadtbroadcastserver.BroadcastServerProtocol.metrics_directory")
+    @patch("yadtbroadcastserver.os")
+    def test_should_not_open_anything_when_no_metric(self, _, metrics_directory, open_):
         metrics_directory.return_value = None
         open_.return_value = MagicMock(spec=file)
 
