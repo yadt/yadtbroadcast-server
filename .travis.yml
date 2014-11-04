@@ -7,4 +7,4 @@ before_script:
 install:
   - pip install pybuilder
   - pyb install_dependencies
-script: "pyb -v"
+script: "pyb -v || cat target/reports/distutils/*"
